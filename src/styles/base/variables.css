@@ -1,0 +1,8 @@
+:root {
+  --black: #000000;
+  --white: #ffffff;
+
+  --default-transition: all 0.2s ease-in-out;
+
+  --max-content-width: 1260px;
+}

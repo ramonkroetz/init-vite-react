@@ -1,0 +1,16 @@
+.error {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  max-width: 320px;
+  padding: 20px;
+  text-align: center;
+}
+
+.error h2 {
+  margin-bottom: 10px;
+  font-size: 20px;
+}
