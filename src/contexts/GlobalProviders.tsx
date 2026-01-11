@@ -1,3 +1,4 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { configure } from 'client-error-logger'
 import React from 'react'
 import { DialogProvider } from 'react-dialogs'
@@ -12,10 +13,14 @@ configure({
   logEndpoint: `${import.meta.env.VITE_PUBLIC_BASE_URL_API}/log`,
 })
 
+const queryClient = new QueryClient()
+
 export function GlobalProviders({ children }: { children: React.ReactNode }) {
   return (
-    <I18nProvider>
-      <DialogProvider dialogs={<WelcomeModal />}>{children}</DialogProvider>
-    </I18nProvider>
+    <QueryClientProvider client={queryClient}>
+      <I18nProvider>
+        <DialogProvider dialogs={<WelcomeModal />}>{children}</DialogProvider>
+      </I18nProvider>
+    </QueryClientProvider>
   )
 }

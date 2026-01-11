@@ -26,6 +26,7 @@
     "@generouted/react-router": "1.20.0",
     "@lingui/core": "5.6.1",
     "@lingui/react": "5.6.1",
+    "@tanstack/react-query": "5.90.16",
     "axios": "1.13.2",
     "classnames": "2.5.1",
     "client-error-logger": "github:ramonkroetz/client-error-logger#v1.1.0",
@@ -34,8 +35,8 @@
     "react-dialogs": "github:ramonkroetz/react-dialogs#v1.0.0",
     "react-dom": "19.2.0",
     "react-hooks": "github:ramonkroetz/react-hooks#v1.0.0",
-    "react-router": "7.9.5",
-    "react-router-dom": "7.9.5",
+    "react-router": "7.12.0",
+    "react-router-dom": "7.12.0",
     "react-use": "17.6.0",
     "utils": "github:ramonkroetz/utils#v1.0.0"
   },

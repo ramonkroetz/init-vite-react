@@ -1,7 +1,5 @@
-import { useEffectOnce } from 'react-use'
-
 import { Image } from '../components/UI/Image'
-import { useApi } from '../hooks/useApi'
+import { useQueryApi } from '../hooks/useApi'
 
 import s from './duel.module.css'
 
@@ -19,22 +17,20 @@ type Card = {
   }[]
 }
 export default function Duel() {
-  const { data, loadingStatus, runApi } = useApi<{ data: Card[] }>({
+  const { data, error, status } = useQueryApi<{ data: Card[] }>({
+    key: 'todo',
     url: 'https://db.ygoprodeck.com/api/v7/cardinfo.php?archetype=Blue-Eyes',
-    method: 'GET',
     error: {
       logName: 'Duel',
       messages: {
-        default: 'Erro ao buscar cartas',
+        default: 'Something went wrong with the duel',
       },
     },
   })
 
-  useEffectOnce(() => {
-    runApi()
-  })
+  if (status === 'pending') return <div>Its time to duel!</div>
 
-  if (loadingStatus !== 'finished') return <div>Its time to duel!</div>
+  if (error) return <div>{error.firstErrorMessage}</div>
 
   return (
     <div className={s.container}>

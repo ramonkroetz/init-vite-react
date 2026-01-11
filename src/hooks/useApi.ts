@@ -1,114 +1,136 @@
-import { useLingui } from '@lingui/react/macro'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { AxiosRequestConfig } from 'axios'
-import { useCallback, useRef, useState } from 'react'
 
 import { type ApiResponse, ApiService } from '../infra/api'
 import { getCustomError, logCustomError } from '../infra/error'
 
-type ErrorMessages = Record<string | number, string>
+export type Keys = 'todo'
 
-export type ApiConfig = {
+type ErrorMessages = Record<string | number, string>
+type ErrorState = { firstErrorMessage: string; errorMessages: ErrorMessages }
+
+type ErrorApiConfig = {
+  logName: string
+  messages: { default: string } & ErrorMessages
+}
+
+type ApiQueryConfig<ResponseData> = {
+  key: Keys
   url: string
-  method?: 'GET' | 'POST' | 'PUT' | 'DELETE'
+  error: ErrorApiConfig
+  requestConfig?: AxiosRequestConfig
+  execute?: boolean
+  cacheTime?: number
+  initialData?: ResponseData
+}
+
+export function useQueryApi<ResponseData>({
+  key,
+  url,
+  requestConfig,
+  execute = true,
+  cacheTime = 0,
+  initialData,
+  error,
+}: ApiQueryConfig<ResponseData>) {
+  return useQuery<ResponseData, ErrorState>({
+    queryKey: [key],
+    queryFn: async () => {
+      try {
+        const response: ApiResponse<ResponseData> = await ApiService.get(url, requestConfig)
+        return response.data
+      } catch (err) {
+        throw handleError(error, err)
+      }
+    },
+    enabled: execute,
+    retry: false,
+    retryOnMount: false,
+    staleTime: cacheTime,
+    initialData: initialData,
+  })
+}
+
+type ApiMutationConfig<ResponseData, BodyObject> = {
+  url: string
+  method: 'POST' | 'PUT' | 'DELETE'
   error: {
     logName: string
     messages: { default: string } & ErrorMessages
   }
+  requestConfig?: AxiosRequestConfig
+  onError?: (error: ErrorState, body: BodyObject) => Promise<void>
+  onSuccess?: (data: ResponseData, body: BodyObject) => Promise<void>
+  onSettled?: (data: ResponseData | undefined, error: ErrorState | null, body: BodyObject) => Promise<void>
+  invalidateQueries?: Keys[]
 }
 
-export type ApiArgs<ResponseData> = {
-  appendUrl?: string
-  body?: unknown
-  config?: AxiosRequestConfig
-  onSuccess?: (data: ResponseData) => void
-  onError?: (errorMessage: string, filteredErrorMessages: ErrorMessages) => void
-}
+export function useMutationApi<ResponseData, BodyObject>({
+  url,
+  method,
+  requestConfig,
+  error,
+  onError,
+  onSuccess,
+  onSettled,
+  invalidateQueries = [],
+}: ApiMutationConfig<ResponseData, BodyObject>) {
+  const queryClient = useQueryClient()
 
-export type FnRunApi<ResponseData> = (args?: ApiArgs<ResponseData>) => Promise<{
-  data: ResponseData | null
-  errorMessage: string
-  filteredErrorMessages: ErrorMessages
-}>
-
-export type LoadingStatusApi = 'idle' | 'loading' | 'finished'
-
-export function useApi<ResponseData>(configParam: ApiConfig) {
-  const { t } = useLingui()
-  const [data, setData] = useState<ResponseData | null>(null)
-  const [loadingStatus, setLoadingStatus] = useState<LoadingStatusApi>('idle')
-  const [errorMessage, setErrorMessage] = useState<string>('')
-
-  const configRef = useRef(configParam)
-
-  const runApi: FnRunApi<ResponseData> = useCallback(
-    async ({ appendUrl, body, config: configRequest, onSuccess, onError }: ApiArgs<ResponseData> = {}) => {
-      const config = configRef.current
-
+  return useMutation<ResponseData, ErrorState, BodyObject>({
+    mutationFn: async (body) => {
       try {
-        setLoadingStatus('loading')
-        setErrorMessage('')
-
         let response: ApiResponse<ResponseData> = { data: null } as ApiResponse<ResponseData>
 
-        const url = appendUrl ? `${config.url}${appendUrl}` : config.url
-
-        switch (config.method) {
+        switch (method) {
           case 'POST':
-            response = await ApiService.post(url, body, configRequest)
+            response = await ApiService.post(url, body, requestConfig)
             break
           case 'PUT':
-            response = await ApiService.put(url, body, configRequest)
+            response = await ApiService.put(url, body, requestConfig)
             break
           case 'DELETE':
-            response = await ApiService.delete(url, { data: body, ...configRequest })
-            break
-          case 'GET':
-            response = await ApiService.get(url, configRequest)
+            response = await ApiService.delete(url, { data: body, ...requestConfig })
             break
           default:
-            throw new Error(t`Invalid API method.`)
+            throw { firstErrorMessage: 'Invalid API method.', errorMessages: {} } as ErrorState
         }
 
-        setData(response.data)
-
-        onSuccess?.(response.data)
-
-        return { data: response.data, errorMessage: '', filteredErrorMessages: {} }
+        return response.data
       } catch (err) {
-        const customError = getCustomError(err)
-        const errorMessages = Object.entries(config.error.messages).reduce((acc: ErrorMessages, [key]) => {
-          if (customError.codes.includes(key)) {
-            acc[key] = config.error.messages[key]
-          }
-
-          return acc
-        }, {})
-
-        const filteredErrorMessages =
-          Object.keys(errorMessages).length > 0
-            ? errorMessages
-            : { default: config.error.messages.default || t`An unexpected error occurred.` }
-
-        const firstErrorMessage = Object.values(filteredErrorMessages)[0]
-
-        setErrorMessage(firstErrorMessage)
-
-        onError?.(firstErrorMessage, filteredErrorMessages)
-        logCustomError(config.error.logName, err)
-
-        return { errorMessage: firstErrorMessage, filteredErrorMessages, data: null }
-      } finally {
-        setLoadingStatus('finished')
+        throw handleError(error, err)
       }
     },
-    [t],
-  )
+    onError: async (error, body) => {
+      await onError?.(error, body)
+    },
+    onSuccess: async (data, body) => {
+      await onSuccess?.(data, body)
+      if (invalidateQueries?.length > 0) {
+        queryClient.invalidateQueries({ queryKey: invalidateQueries })
+      }
+    },
+    onSettled: async (data, error, body) => {
+      await onSettled?.(data, error, body)
+    },
+  })
+}
 
-  return {
-    data,
-    errorMessage,
-    loadingStatus,
-    runApi,
-    setData,
-  }
+function handleError(config: ErrorApiConfig, err: unknown) {
+  const customError = getCustomError(err)
+  const errorMessages = Object.entries(config.messages).reduce((acc: ErrorMessages, [key]) => {
+    if (customError.codes.includes(key)) {
+      acc[key] = config.messages[key]
+    }
+
+    return acc
+  }, {})
+
+  const filteredErrorMessages =
+    Object.keys(errorMessages).length > 0 ? errorMessages : { default: config.messages.default }
+
+  const firstErrorMessage = Object.values(filteredErrorMessages)[0]
+  logCustomError(config.logName, err)
+
+  return { firstErrorMessage, errorMessages: filteredErrorMessages } as ErrorState
 }

@@ -14,7 +14,6 @@ msgstr ""
 "Plural-Forms: \n"
 
 #: src/components/UI/ErrorBoundary.tsx
-#: src/hooks/useApi.ts
 msgid "An unexpected error occurred."
 msgstr "Ocorreu um erro inesperado."
 
@@ -33,10 +32,6 @@ msgstr "Página Inicial"
 #: src/components/Header.tsx
 msgid "Home Page"
 msgstr "Página Inicial"
-
-#: src/hooks/useApi.ts
-msgid "Invalid API method."
-msgstr "Método de API inválido."
 
 #: src/pages/index.tsx
 #: src/pages/modals.tsx
