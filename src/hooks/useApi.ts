@@ -93,7 +93,7 @@ export function useMutationApi<ResponseData, BodyObject>({
             response = await ApiService.delete(url, { data: body, ...requestConfig })
             break
           default:
-            throw { firstErrorMessage: 'Invalid API method.', errorMessages: {} } as ErrorState
+            throw new Error('Invalid API method.')
         }
 
         return response.data
