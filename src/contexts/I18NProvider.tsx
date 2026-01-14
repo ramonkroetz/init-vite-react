@@ -4,25 +4,22 @@ import { createContext, type PropsWithChildren, useCallback, useContext, useEffe
 
 import { LANGUAGES, type Language } from '../locales/locales'
 
-const languages = ['en', 'pt-BR']
-const defaultLanguage = languages[0]
-
 type I18nContextProps = {
-  language: string
-  languages: string[]
-  setLanguage: (locale: string) => void
+  language: Language
+  setLanguage: (locale: Language) => void
 }
+
+const defaultLanguage = LANGUAGES[0]
 
 const I18nContextInitialState: I18nContextProps = {
   language: defaultLanguage,
-  languages,
   setLanguage: () => {},
 }
 
 const I18nContext = createContext(I18nContextInitialState)
 
 export function I18nProvider({ children }: PropsWithChildren) {
-  const [language, setLanguage] = useState('')
+  const [language, setLanguage] = useState(defaultLanguage)
 
   useEffect(() => {
     const language = navigator.language as Language
@@ -53,7 +50,7 @@ export function I18nProvider({ children }: PropsWithChildren) {
 
   if (!language) return null
 
-  const value = { language, languages, setLanguage }
+  const value = { language, setLanguage }
 
   return (
     <LinguiProvider i18n={i18n}>

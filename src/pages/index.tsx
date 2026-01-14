@@ -9,13 +9,14 @@ import { Footer } from '../components/Footer'
 import { Header } from '../components/Header'
 import { Main } from '../components/Main'
 import { Image } from '../components/UI/Image'
+import { LANGUAGES } from '../locales/locales'
 
 import s from './index.module.css'
 
 export default function Home() {
   usePageTitle('Home')
   const { t } = useLingui()
-  const { setLanguage, languages } = useI18n()
+  const { setLanguage } = useI18n()
 
   return (
     <>
@@ -23,7 +24,7 @@ export default function Home() {
       <Main>
         <div className={s.page}>
           <div className={s.buttonsWrapper}>
-            {languages.map((language) => (
+            {LANGUAGES.map((language) => (
               <button className={s.button} key={language} onClick={() => setLanguage(language)} type="button">
                 {language}
               </button>

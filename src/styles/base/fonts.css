@@ -1,35 +1,29 @@
 @font-face {
-  font-family: 'TCCC Unity Text';
+  font-family: 'TCCC Unity Text Regular';
   font-weight: 400;
   font-style: normal;
   font-display: swap;
-  src:
-    url('/fonts/tccc-unity-text/TCCCUnityTextRegular.woff2') format('woff2'),
-    url('/fonts/tccc-unity-text/TCCCUnityTextRegular.woff') format('woff');
+  src: url('/fonts/tccc-unity-text/TCCCUnityTextRegular.woff2') format('woff2');
 }
 
 @font-face {
-  font-family: 'TCCC Unity Text';
+  font-family: 'TCCC Unity Text Bold';
   font-weight: 700;
   font-style: normal;
   font-display: swap;
-  src:
-    url('/fonts/tccc-unity-text/TCCCUnityTextBold.woff2') format('woff2'),
-    url('/fonts/tccc-unity-text/TCCCUnityTextBold.woff') format('woff');
+  src: url('/fonts/tccc-unity-text/TCCCUnityTextBold.woff2') format('woff2');
 }
 
 @font-face {
-  font-family: 'TCCC Unity Headline';
+  font-family: 'TCCC Unity Headline Bold';
   font-weight: 700;
   font-style: normal;
   font-display: swap;
-  src:
-    url('/fonts/tccc-unity-headline/TCCCUnityHeadlineBold.woff2') format('woff2'),
-    url('/fonts/tccc-unity-headline/TCCCUnityHeadlineBold.woff') format('woff');
+  src: url('/fonts/tccc-unity-headline/TCCCUnityHeadlineBold.woff2') format('woff2');
 }
 
 :root {
-  --font-tccc-unity-text-regular: 'TCCC Unity Text';
-  --font-tccc-unity-text-bold: 'TCCC Unity Text';
-  --font-tccc-unity-headline-bold: 'TCCC Unity Headline';
+  --font-tccc-unity-text-regular: 'TCCC Unity Text Regular';
+  --font-tccc-unity-text-bold: 'TCCC Unity Text Bold';
+  --font-tccc-unity-headline-bold: 'TCCC Unity Headline Bold';
 }

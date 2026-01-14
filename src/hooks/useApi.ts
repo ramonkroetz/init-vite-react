@@ -65,7 +65,7 @@ type ApiMutationConfig<ResponseData, BodyObject> = {
   invalidateQueries?: Keys[]
 }
 
-export function useMutationApi<ResponseData, BodyObject>({
+export function useMutationApi<ResponseData, BodyObject = void>({
   url,
   method,
   requestConfig,
