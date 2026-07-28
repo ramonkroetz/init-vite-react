@@ -2,7 +2,15 @@
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "files": {
     "ignoreUnknown": false,
-    "includes": ["**", "!node_modules", "!dist", "!src/locales", "!public/browserDetect", "!src/router.ts"]
+    "includes": [
+      "**",
+      "!node_modules",
+      "!dist",
+      "!src/locales",
+      "!public/browserDetect",
+      "!src/router.ts",
+      "!.opencode"
+    ]
   },
   "formatter": {
     "enabled": true,
@@ -28,9 +36,6 @@
         "noUnusedLabels": "error",
         "noUnusedVariables": "error",
         "noUnusedFunctionParameters": "error"
-      },
-      "nursery": {
-        "noImportCycles": "error"
       }
     }
   },
@@ -53,6 +58,7 @@
     "actions": {
       "source": {
         "useSortedAttributes": "on",
+        "useSortedProperties": "on",
         "organizeImports": {
           "level": "on",
           "options": {

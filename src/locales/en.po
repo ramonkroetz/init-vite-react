@@ -13,43 +13,63 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
-#: src/components/UI/ErrorBoundary.tsx
+msgid "A server error occurred while loading duel cards."
+msgstr "A server error occurred while loading duel cards."
+
 msgid "An unexpected error occurred."
 msgstr "An unexpected error occurred."
 
-#: src/pages/index.tsx
+msgid "Close"
+msgstr "Close"
+
+msgid "Could not load duel cards."
+msgstr "Could not load duel cards."
+
 msgid "Example Image."
 msgstr "Example Image."
 
-#: src/pages/index.tsx
-msgid "Get started by editing <0>app/index.tsx</0>."
-msgstr "Get started by editing <0>app/index.tsx</0>."
+msgid "Footer"
+msgstr "Footer"
 
-#: src/components/UI/ErrorBoundary.tsx
+msgid "Get started by editing app/index.tsx."
+msgstr "Get started by editing app/index.tsx."
+
 msgid "Go to home"
 msgstr "Go to home"
 
-#: src/components/Header.tsx
+msgid "Header"
+msgstr "Header"
+
 msgid "Home Page"
 msgstr "Home Page"
 
-#: src/pages/index.tsx
-#: src/pages/modals.tsx
+msgid "It's time to duel!"
+msgstr "It's time to duel!"
+
+msgid "Loading..."
+msgstr "Loading..."
+
 msgid "Modals Page"
 msgstr "Modals Page"
 
-#: src/pages/modals.tsx
 msgid "Open"
 msgstr "Open"
 
-#: src/pages/index.tsx
+msgid "Página não encontrada"
+msgstr "Página não encontrada"
+
 msgid "Save and see your changes instantly."
 msgstr "Save and see your changes instantly."
 
-#: src/components/UI/ErrorBoundary.tsx
 msgid "Try again"
 msgstr "Try again"
 
-#: src/pages/index.tsx
+msgid "Voltar ao início"
+msgstr "Voltar ao início"
+
+#. placeholder {0}: props?.name ?? ''
+msgid "Welcome {0}"
+msgstr "Welcome {0}"
+
 msgid "Yugioh Page"
 msgstr "Yugioh Page"

@@ -1,9 +1,3 @@
 {
-  "recommendations": [
-    "biomejs.biome",
-    "jock.svg",
-    "vscode-icons-team.vscode-icons",
-    "mrorz.language-gettext",
-    "emeraldwalk.RunOnSave"
-  ]
+  "recommendations": ["biomejs.biome", "jock.svg", "vscode-icons-team.vscode-icons", "mrorz.language-gettext"]
 }

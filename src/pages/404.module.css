@@ -1,0 +1,41 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-24);
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 100vh;
+  background-color: var(--black);
+}
+
+.code {
+  margin: 0;
+  font-size: 6rem;
+  font-weight: bold;
+  line-height: 1;
+  color: var(--white);
+}
+
+.message {
+  margin: 0;
+  font-size: var(--size-20);
+  color: var(--white);
+  text-align: center;
+}
+
+.button {
+  padding: var(--size-12) var(--size-24);
+  font-size: var(--size-16);
+  font-weight: 600;
+  color: var(--black);
+  cursor: pointer;
+  background-color: var(--white);
+  border: none;
+  border-radius: 4px;
+  transition: var(--default-transition);
+}
+
+.button:hover {
+  opacity: 0.8;
+}

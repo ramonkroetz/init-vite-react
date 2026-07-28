@@ -1,38 +1,40 @@
 {
   "compilerOptions": {
-    "target": "ES2022",
-    "useDefineForClassFields": true,
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "module": "ESNext",
-    "skipLibCheck": true,
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-    "verbatimModuleSyntax": true,
-    "moduleDetection": "force",
-    "noEmit": true,
-    "jsx": "react-jsx",
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "erasableSyntaxOnly": true,
-    "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true,
-    "esModuleInterop": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "incremental": true,
+    // Language and Environment
+    "target": "ES2022", // Modern JavaScript output
+    "lib": ["ES2022", "DOM", "DOM.Iterable"], // Include DOM types for React
+    "jsx": "react-jsx", // Modern JSX transform (React 17+)
+
+    // Modules
+    "module": "ESNext", // Use modern ES modules
+    "moduleResolution": "bundler", // For Vite/modern bundlers
+    "resolveJsonModule": true, // Import JSON files
+    "allowImportingTsExtensions": true, // Allow .ts/.tsx in imports
+
+    // Emit
+    "noEmit": true, // Let bundler handle output
+    "sourceMap": true, // Generate source maps for debugging
+
+    // Interop Constraints
+    "isolatedModules": true, // Required for tools like Vite
+    "esModuleInterop": true, // Better CommonJS compatibility
+    "allowSyntheticDefaultImports": true, // Allow default imports
+    "forceConsistentCasingInFileNames": true, // Enforce consistent file naming
+
+    // Type Checking
+    "strict": true, // Enable all strict type checks
+    "noUnusedLocals": true, // Error on unused variables
+    "noUnusedParameters": true, // Error on unused parameters
+    "noFallthroughCasesInSwitch": true, // Catch switch fallthrough bugs
+    "noImplicitReturns": true, // Require return in all code paths
+
+    // Advanced
+    "skipLibCheck": true, // Skip type checking of declaration files
+    "baseUrl": ".", // Base for path resolution
     "paths": {
-      "@/src/*": ["./src/*"]
+      "@/src/*": ["./src/*"] // Path alias for imports
     }
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    "vite-env.d.ts",
-    "dist/types/**/*.ts",
-    "vite.config.ts",
-    "src",
-    "stylelint.config.mjs"
-  ],
-  "exclude": ["node_modules"]
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.d.ts"],
+  "exclude": ["node_modules", "dist", "build", "**/*.spec.ts", "**/*.test.ts", "**/*.spec.tsx", "**/*.test.tsx"]
 }

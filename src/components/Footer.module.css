@@ -8,7 +8,7 @@
 
 .container {
   width: 100%;
-  max-width: var(--max-content-width);
+  max-width: var(--content-max-w);
   height: 100%;
   padding: 0 20px;
 }

@@ -1,7 +1,7 @@
 import { useLingui } from '@lingui/react/macro'
 import { useDialog } from 'react-dialogs'
 
-import { WELCOME_MODAL_ID, type WelcomeModalProps } from '../components/Modals/WelcomeModal'
+import { WELCOME_MODAL_ID, type WelcomeModalProps } from './_modals/WelcomeModal'
 
 export default function Modals() {
   const { t } = useLingui()

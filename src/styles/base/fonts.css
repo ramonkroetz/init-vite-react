@@ -21,9 +21,3 @@
   font-display: swap;
   src: url('/fonts/tccc-unity-headline/TCCCUnityHeadlineBold.woff2') format('woff2');
 }
-
-:root {
-  --font-tccc-unity-text-regular: 'TCCC Unity Text Regular';
-  --font-tccc-unity-text-bold: 'TCCC Unity Text Bold';
-  --font-tccc-unity-headline-bold: 'TCCC Unity Headline Bold';
-}

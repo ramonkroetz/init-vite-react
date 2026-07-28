@@ -8,8 +8,8 @@
   margin: auto;
 
   & ol {
-    margin: 0;
     padding-left: 0;
+    margin: 0;
     font-size: 14px;
     line-height: 24px;
     letter-spacing: -0.01em;
@@ -21,10 +21,10 @@
 
     & code {
       padding: 2px 4px;
-      border-radius: 4px;
       font-family: inherit;
       font-weight: 600;
-      background: rgba(0, 0, 0, 0.05);
+      background: var(--black-05);
+      border-radius: 4px;
     }
   }
 
@@ -36,18 +36,18 @@
 }
 
 .button {
-  cursor: pointer;
   display: block;
   width: 100%;
   padding: 8px 16px;
-  border: none;
   font-size: 16px;
   font-weight: normal;
   color: var(--black);
   text-align: center;
   appearance: none;
+  cursor: pointer;
   background: transparent;
   background-color: var(--white);
+  border: none;
 }
 
 .imageWrapper {
@@ -68,5 +68,5 @@
 .iconTest {
   width: 100px;
   height: 100px;
-  fill: red;
+  fill: var(--red);
 }

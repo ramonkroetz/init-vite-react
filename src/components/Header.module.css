@@ -9,7 +9,7 @@
 .container {
   display: flex;
   width: 100%;
-  max-width: var(--max-content-width);
+  max-width: var(--content-max-w);
   height: 100%;
   padding: 0 20px;
 }
@@ -19,16 +19,16 @@
 }
 
 .button {
-  cursor: pointer;
   display: block;
   width: 100%;
   padding: 8px 16px;
-  border: none;
   font-size: 16px;
   font-weight: normal;
-  color: var(--main-color-02);
+  color: var(--gray-900);
   text-align: center;
   appearance: none;
+  cursor: pointer;
   background: transparent;
-  background-color: var(--main-color-11);
+  background-color: var(--white);
+  border: none;
 }

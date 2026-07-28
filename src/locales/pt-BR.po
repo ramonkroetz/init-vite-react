@@ -13,43 +13,63 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
-#: src/components/UI/ErrorBoundary.tsx
+msgid "A server error occurred while loading duel cards."
+msgstr "Ocorreu um erro no servidor ao carregar as cartas do duelo."
+
 msgid "An unexpected error occurred."
 msgstr "Ocorreu um erro inesperado."
 
-#: src/pages/index.tsx
+msgid "Close"
+msgstr "Fechar"
+
+msgid "Could not load duel cards."
+msgstr "Não foi possível carregar as cartas do duelo."
+
 msgid "Example Image."
 msgstr "Exemplo de imagem."
 
-#: src/pages/index.tsx
-msgid "Get started by editing <0>app/index.tsx</0>."
-msgstr "Comece editando <0>app/index.tsx</0>."
+msgid "Footer"
+msgstr "Rodapé"
 
-#: src/components/UI/ErrorBoundary.tsx
+msgid "Get started by editing app/index.tsx."
+msgstr "Comece editando app/index.tsx."
+
 msgid "Go to home"
-msgstr "Página Inicial"
+msgstr "Ir para a página inicial"
 
-#: src/components/Header.tsx
+msgid "Header"
+msgstr "Cabeçalho"
+
 msgid "Home Page"
-msgstr "Página Inicial"
+msgstr "Página inicial"
 
-#: src/pages/index.tsx
-#: src/pages/modals.tsx
+msgid "It's time to duel!"
+msgstr "É hora do duelo!"
+
+msgid "Loading..."
+msgstr "Carregando..."
+
 msgid "Modals Page"
-msgstr "Página de modals"
+msgstr "Página de modais"
 
-#: src/pages/modals.tsx
 msgid "Open"
 msgstr "Abrir"
 
-#: src/pages/index.tsx
+msgid "Página não encontrada"
+msgstr "Página não encontrada"
+
 msgid "Save and see your changes instantly."
 msgstr "Salve e veja suas alterações instantaneamente."
 
-#: src/components/UI/ErrorBoundary.tsx
 msgid "Try again"
 msgstr "Tentar novamente"
 
-#: src/pages/index.tsx
+msgid "Voltar ao início"
+msgstr "Voltar ao início"
+
+#. placeholder {0}: props?.name ?? ''
+msgid "Welcome {0}"
+msgstr "Bem-vindo {0}"
+
 msgid "Yugioh Page"
 msgstr "Página Yugioh"

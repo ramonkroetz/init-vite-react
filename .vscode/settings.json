@@ -5,7 +5,9 @@
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
     "source.organizeImports.biome": "explicit",
-    "source.action.useSortedAttributes.biome": "explicit"
+    "source.action.useSortedProperties.biome": "explicit",
+    "source.action.useSortedAttributes.biome": "explicit",
+    "source.fixAll.biome": "explicit"
   },
   "[svg]": {
     "editor.defaultFormatter": "jock.svg"
@@ -28,13 +30,7 @@
   "[postcss]": {
     "editor.defaultFormatter": "biomejs.biome"
   },
-  "emeraldwalk.runonsave": {
-    "commands": [
-      {
-        "match": ".*\\.(css|module.css)$",
-        "runIn": "terminal",
-        "cmd": "npm run css:format -- \"${file}\""
-      }
-    ]
+  "[html]": {
+    "editor.defaultFormatter": "biomejs.biome"
   }
 }

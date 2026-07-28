@@ -1,118 +1,273 @@
 # Init Vite React
 
-A production-ready React + Vite starter with file-based routing, i18n, dialogs, API utilities, PWA support, and image/SVG tooling.
+Template React + Vite pronto para produção com roteamento por arquivos (Generouted), i18n com Lingui, React Query, Zustand, CSS Modules, otimização de imagem/SVG, automações de qualidade e deploy via GitLab CI na AWS.
 
-[![Node](https://img.shields.io/badge/node-LTS-brightgreen)]() [![TypeScript](https://img.shields.io/badge/ts-5.x-blue)]() [![Vite](https://img.shields.io/badge/vite-7.x-yellow)]()
+[![Node](https://img.shields.io/badge/node-26.4-green)]() [![TypeScript](https://img.shields.io/badge/ts-5.9-blue)]() [![Vite](https://img.shields.io/badge/vite-8.0-yellow)]() [![React](https://img.shields.io/badge/react-19.2-blue)]()
 
 ---
 
-## Table of Contents
+## Sumário
 - Quick Start
 - Scripts
-- Environment
-- Project structure
-- Patterns (Routing, i18n, API)
-- Linting & Formatting
-- Contributing
-- License
+- Atualização do Node
+- Variáveis de Ambiente
+- Estrutura do Projeto
+- Padrões Principais
+- Lint, Formatação e Qualidade
+- CI/CD (GitLab)
+- Guias em `docs/`
+- Troubleshooting
+- Licença
 
 ---
 
 ## Quick Start
 ```bash
-# install correct node version considering .nvmrc file
+# Usa a versão de Node definida em .nvmrc
 nvm install
+nvm use
 
-# Install dependencies
+# Instala dependências
 npm install
 
-# Start dev server (runs Lingui extract/compile beforehand)
+# Sobe ambiente local (com Lingui extract + compile antes do Vite)
 npm run dev
 
-# Build project
+# Build local de produção
 npm run build
 
-# Preview a production build
+# Preview com variáveis de .env.dev
 npm run preview
 ```
 
-> Tip: `npm run dev` runs Lingui extraction and compilation automatically so translations are available during development.
+> `npm run dev` e `npm run lint` executam extração/compilação de traduções automaticamente.
 
 ---
 
-## Scripts (high level)
-- `dev` — Dev server (extracts/translates with Lingui)
-- `build` — Type-checks and builds
-- `build:web` — Lint then `build`
-- `preview` / `start` — Serve a production build
-- `lint` / `lint:css` / `css:format` — Linters and CSS fixes
-- `supported:browsers` — Regenerates `public/browserDetect/supportedBrowsers.js`
+## Scripts
+- `dev`: executa `lingui:extract:compile` e sobe Vite com `.env.dev`.
+- `build`: executa type-check (`tsc -b`) e build do Vite.
+- `build:dev`: build usando `.env.dev`.
+- `build:stage`: build usando `.env.stage`.
+- `build:production`: build usando `.env.prod`.
+- `preview`: roda `build:dev` e abre preview do Vite.
+- `prebuild`: executa `lingui:extract:compile:strict` + `lint` antes do build.
+- `lint`: roda `lint:node` + `lint:biome` + `lint:ts`.
+- `lint:node`: verifica vulnerabilidades no Node com `is-my-node-vulnerable`.
+- `lint:biome`: valida formatação/lint com erro em warnings.
+- `lint:ts`: type-check sem emitir arquivos.
+- `biome:format`: aplica formatação automática com Biome.
+- `lingui:extract:compile`: extrai mensagens e compila catálogos.
+- `lingui:extract:compile:strict`: extrai/compila com modo estrito.
+- `supported:browsers`: gera detecção de navegadores em `public/browserDetect/`.
+- `analyze`: gera visualização do bundle em `dist/stats.html`.
+- `opencode`: abre o CLI do OpenCode para este workspace.
+- `commit`: executa fluxo de commit via OpenCode.
+- `translate`: executa fluxo de tradução via OpenCode.
+- `audit`: executa auditoria de vulnerabilidades via OpenCode.
 
 ---
 
-## Environment
-Env files supported: `.env.dev`, `.env.stage`, `.env.prod` (loaded via `env-cmd`).
+## Atualização do Node
 
-Common variables:
+```bash
+nvm install node && nvm alias default node && nvm use node && node -v > .nvmrc
+
+# Recomendado após instalar uma nova versão
+rm -rf node_modules && npm install
+
+# Remover o package.lock somente em ultimo caso onde a versão do node é imcompativel com a atual configuração.
+```
+
+---
+
+## Variáveis de Ambiente
+
+Arquivos suportados:
+- `.env.dev`
+- `.env.stage`
+- `.env.prod`
+
 ```env
 VITE_PUBLIC_BASE_URL_API=http://localhost:3000
 VITE_PUBLIC_LOG_ENDPOINT=debug
+VITE_GTM_ID=GTM-XXXXXXX
+VITE_ENABLE_DATA_TEST=true
 ```
 
-- `VITE_PUBLIC_BASE_URL_API`: Base URL for API requests
-- `VITE_PUBLIC_LOG_ENDPOINT`: `debug` to log locally, or a URL path accepted by `logger-browser`
+| Variável | Descrição |
+|---|---|
+| `VITE_PUBLIC_BASE_URL_API` | Base para chamadas de API no `ApiService` |
+| `VITE_PUBLIC_LOG_ENDPOINT` | Controla modo de log (`debug`) e endpoint de log |
+| `VITE_GTM_ID` | ID do Google Tag Manager usado pelo `vite-plugin-radar` |
+| `VITE_ENABLE_DATA_TEST` | Habilita plugin Babel que injeta `data-test` automaticamente |
 
 ---
 
-## Project structure (high level)
-- `src/pages/` — File-based routes (root layout: `src/pages/_app.tsx`)
-- `src/contexts/` — App providers (`GlobalProviders`, `I18NProvider`)
-- `src/components/` — Reusable UI, dialogs, error boundary, image utils
-- `src/infra/` — API, cookie, and error utilities
-- `src/locales/` — Lingui message catalogs
-- `src/styles/` — Global styles, resets, variables
+## Estrutura do Projeto
 
-Import alias: `@/src` → `./src` (see `vite.config.ts`)
+```
+src/
+├── assets/                  # Assets estáticos
+│   ├── icons/               # Ícones SVG (ex.: akatsuki.svg)
+│   └── images/              # Imagens (ex.: alpaca.jpg)
+├── components/              # Componentes reutilizáveis
+│   ├── UI/                  # Componentes base (ErrorBoundary, Image)
+│   ├── Pages/               # Componentes acoplados a páginas (SpinnerPage)
+│   ├── Header.tsx
+│   ├── Footer.tsx
+│   └── Main.tsx
+├── contexts/                # Providers globais
+│   ├── GlobalProviders.tsx   # QueryClientProvider + I18nProvider
+│   └── I18NProvider.tsx      # Provider Lingui + store Zustand
+├── hooks/                   # Hooks compartilhados
+│   ├── useApi.ts            # useQueryApi / useMutationApi (React Query)
+│   ├── useBreakpoint.ts     # Hook de breakpoints responsivos
+│   └── usePageTitle.ts      # Hook para título da página
+├── infra/                   # Camadas de infraestrutura
+│   ├── api.ts               # Cliente HTTP baseado em fetch
+│   ├── cookie.ts            # Serviço de cookies (js-cookie)
+│   └── error.ts             # CustomError e utilitários de log
+├── locales/                 # Catálogos de tradução
+│   ├── locales.ts           # Configuração de idiomas (en, pt-BR)
+│   ├── en.po / en.js
+│   └── pt-BR.po / pt-BR.js
+├── modals/                  # Modais globais
+├── pages/                   # Rotas file-based (Generouted)
+│   ├── _app.tsx             # Layout raiz + ErrorBoundary
+│   ├── index.tsx            # Rota "/"
+│   ├── duel.tsx             # Rota "/duel"
+│   ├── 404.tsx              # Rota de erro 404
+│   └── modals/              # Rota "/modals" com exemplos de modais
+│       ├── _layout.tsx      # Layout com DialogProvider
+│       ├── _modals/         # Modais locais da feature
+│       └── index.tsx
+├── styles/                  # Estilos globais
+│   ├── base/
+│   │   ├── fonts.css        # @font-face (TCCC Unity)
+│   │   ├── reset.css        # modern-normalize
+│   │   └── variables.css    # Variáveis CSS (cores, fontes, breakpoints)
+│   └── globals.css
+├── router.ts                # Gerado automaticamente pelo Generouted
+└── main.tsx                 # Entry point
+
+public/
+├── browserDetect/           # Detecção de navegadores (gerado por script)
+├── fonts/                   # Fontes TCCC Unity (woff2)
+├── favicon.ico
+└── robots.txt
+
+scripts/
+├── babel-plugin-auto-data-test.ts  # Injeta data-test em elementos com CSS Modules
+└── generateSupportedBrowsers.sh     # Gera detecção de navegadores via browserslist
+```
+
+Alias de import:
+- `@/src` -> `./src`
 
 ---
 
-## Patterns
+## Padrões Principais
+
 ### Routing
-- Generouted file-based routing (`src/router.ts` is generated). Add routes by creating files in `src/pages/`.
+- Roteamento baseado em arquivos via **Generouted**.
+- `src/router.ts` é gerado automaticamente (não editar manualmente).
+- Novas rotas: criar arquivos em `src/pages/`. Tipos são atualizados ao rodar `npm run dev`.
+- Rotas disponíveis: `/`, `/duel`, `/modals`.
 
-### i18n
-- Lingui provider at `src/contexts/I18NProvider.tsx` (detects browser language and dynamically loads catalogs).
-- Use `<Trans>` and `t` macros; extraction/compilation happens in dev and lint runs.
+### i18n (Lingui)
+- Provider em `src/contexts/I18NProvider.tsx`.
+- Idiomas: `en`, `pt-BR` (definidos em `src/locales/locales.ts`).
+- Mensagens carregadas dinamicamente via `.po?lingui`.
+- Store Zustand para idioma (`useI18nStore` / `setLanguage`).
+- **Sempre** usar `useLingui` de `@lingui/react/macro` com `const { t } = useLingui()`.
 
-### API
-- `src/infra/api.ts` exposes an Axios instance and transforms errors into `CustomError`.
-- `src/hooks/useApi.ts` provides a standardized hook for requests with `isLoading`, `data`, `errorMessage`, and `runApi`.
+### API e React Query
+- `src/infra/api.ts`: cliente HTTP sobre `fetch`, erros normalizados em `CustomError`.
+- `src/hooks/useApi.ts`:
+  - `useQueryApi` para leitura (GET).
+  - `useMutationApi` para escrita (POST, PUT, DELETE).
+  - Suporte a cache, refetch, removeQueries, callbacks e tratamento de erros centralizado.
+
+### Gerenciamento de Estado
+- **Zustand** para estado global do cliente (ex.: idioma).
+- **React Query** para dados de servidor/cache.
+
+### Build / Plugins Vite
+- `@vitejs/plugin-react` com React Compiler.
+- `@rolldown/plugin-babel` com macro Lingui + `babel-plugin-react-compiler`.
+- `vite-plugin-image-optimizer`, `vite-imagetools`, `vite-plugin-svgr` para assets.
+- `vite-plugin-radar` para Google Tag Manager.
+- PWA via `vite-plugin-pwa` (desativado por padrão: `ENABLED_PWA = false`).
+- Proxy de `/api` para `http://localhost:5001` em dev.
+- `manualChunks` para separar `react`, `react-router` e `client-error-logger`.
+
+### Responsividade
+- Breakpoints definidos como variáveis CSS: `--breakpoint-sm` (480px), `--md` (768px), `--lg` (1024px), `--xl` (1280px).
+- Hook `useBreakpoint` em `src/hooks/useBreakpoint.ts`.
+- Abordagem mobile-first.
+
+### Imagens
+- **Locais**: componente `Image` com `vite-imagetools` (formato webp, metadata).
+- **Externas**: componente `ExternalImage` para URLs remotas.
+- Otimização automática com `vite-plugin-image-optimizer` (SVGO, sharp).
+
+### Auto `data-test`
+- Plugin Babel em `scripts/babel-plugin-auto-data-test.ts` injeta `data-test` automaticamente em elementos JSX com `className` de CSS Modules.
+- Ativado via `VITE_ENABLE_DATA_TEST=true`.
+
+### Detecção de Navegadores
+- Script `supported:browsers` gera detecção via `browserslist-useragent-regexp`.
+- Regras em `.browserslistrc`: `>0.3%`, `chrome >=111`, `edge >=111`, `firefox >=111`, `safari >=16.4`, `not dead`.
+
+### Modais
+- Biblioteca `react-dialogs`.
+- Modais locais em `pages/*/_modals/`, registrados no `DialogProvider` do layout da página.
+- Modais globais em `src/modals/`.
 
 ---
 
-## Linting & Formatting
-- Run `npm run lint` to execute Biome (fails on warnings), Stylelint, and Lingui checks.
-- Use `npm run css:format` to auto-fix CSS order/style issues.
+## Lint, formatação e qualidade
+
+- **Biome**: formatação e linting com regras customizadas (sem `console`, sem imports não usados, etc.).
+- `npm run lint`: executa `lint:node` + `lint:biome` + `lint:ts`.
+- `npm run lint:biome`: falha em warnings.
+- `npm run biome:format`: aplica autoformatação.
+- TypeScript: modo estrito, sem `any` implícito, sem variáveis/parâmetros não usados.
 
 ---
 
-## Contributing
-Thanks for contributing! Please:
-- Respect Biome lint rules and fix any warnings.
-- Keep changes small and well-tested.
-- Update translations when adding user-visible strings.
+## CI/CD (GitLab)
 
-Open a PR against `main` and include a short description of your changes.
+Pipeline definido em `.gitlab-ci.yml`:
+
+| Estágio | Descrição |
+|---|---|
+| `quality` | `npm ci` + `npm run lint` + `npm run build:production` (em MRs e main) |
+| `build` | `npm run build:production` + artifact `dist.tar.gz` (apenas main) |
+| `deploy` | Upload para S3 + invalidação CloudFront (manual) |
+| `invalidate` | Invalidação CloudFront manual |
 
 ---
 
-## License
-Specify a license (e.g. MIT) or add a `LICENSE` file to the repository.
+## Guias em `docs/`
+
+- `docs/architecture-guidelines.md` — Organização do projeto por escopo (rota vs global).
+- `docs/component-guidelines.md` — Padrões de componentes, nomenclatura, CSS Modules e variáveis.
+- `docs/global-state-guidelines.md` — Quando e como criar estados globais com Zustand.
+- `docs/i18n-guidelines.md` — Boas práticas de internacionalização com Lingui.
+- `docs/modal-guidelines.md` — Criação e uso de modais com `react-dialogs`.
+- `docs/useApi-guidelines.md` — Integração com API usando `useQueryApi` / `useMutationApi`.
 
 ---
 
 ## Troubleshooting
-- Ensure required env vars are set (especially `VITE_PUBLIC_BASE_URL_API`).
-- Private packages (e.g. `logger-browser`) may require network access or credentials.
+- Verifique se as variáveis de ambiente obrigatórias estão definidas.
+- Dependências privadas (`client-error-logger`, `react-dialogs`) exigem acesso a repositórios Git internos.
+- Após adicionar uma rota, reinicie o dev server para atualizar os tipos em `router.ts`.
+- Para usar PWA, altere `ENABLED_PWA = true` em `vite.config.ts`.
 
-If you want any additional sections (examples, badges, or contributing guidelines), tell me what to include and I’ll add them.
+---
+
+## Licença
+MIT

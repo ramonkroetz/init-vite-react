@@ -1,4 +1,4 @@
-import { Trans } from '@lingui/react/macro'
+import { useLingui } from '@lingui/react/macro'
 import { logError } from 'client-error-logger'
 import { useEffect } from 'react'
 import { useRouteError } from 'react-router'
@@ -9,6 +9,7 @@ import { useNavigate } from '@/src/router'
 import s from './ErrorBoundary.module.css'
 
 export function ErrorBoundary() {
+  const { t } = useLingui()
   const navigate = useNavigate()
   const error = useRouteError()
 
@@ -23,14 +24,12 @@ export function ErrorBoundary() {
   return (
     <Main>
       <div className={s.error}>
-        <h2>
-          <Trans>An unexpected error occurred.</Trans>
-        </h2>
+        <h2>{t`An unexpected error occurred.`}</h2>
         <button onClick={() => navigate(0)} type="button">
-          <Trans>Try again</Trans>
+          {t`Try again`}
         </button>
         <button onClick={() => navigate('/')} type="button">
-          <Trans>Go to home</Trans>
+          {t`Go to home`}
         </button>
       </div>
     </Main>

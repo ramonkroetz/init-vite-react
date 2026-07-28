@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import s from './Image.module.css'
 
 type LocalImage = { src: string; width: number; height: number }
 
 type ImageProps = {
-  src: LocalImage | string
+  src: LocalImage
   alt: string
   priority?: boolean
   width: number
@@ -13,10 +13,6 @@ type ImageProps = {
 }
 
 export function Image({ src, alt, priority, width, grow }: ImageProps) {
-  if (typeof src === 'string') {
-    return <ExternalImage alt={alt} grow={grow} priority={priority} src={src} width={width} />
-  }
-
   const aspectRatio = src.width / src.height
   const currentHeight = width / aspectRatio
   const styleResize = grow ? { width: '100%', height: '100%' } : { width, height: currentHeight }
@@ -48,9 +44,11 @@ type ExternalImageProps = {
 
 export function ExternalImage({ src, alt, priority, width, grow }: ExternalImageProps) {
   const [heightImg, setHeightImg] = useState(0)
+  const imgRef = useRef<HTMLImageElement | null>(null)
 
   useEffect(() => {
-    const img = new window.Image()
+    const img = imgRef.current ?? new window.Image()
+    imgRef.current = img
     img.src = src
 
     img.onload = () => {

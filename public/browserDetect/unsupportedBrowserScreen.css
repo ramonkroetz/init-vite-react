@@ -1,0 +1,52 @@
+.unsupported-browser-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 24px;
+  color: #fff;
+  background: #000;
+}
+
+.unsupported-browser-card {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  padding: 24px 20px;
+  font-family: 'TCCC Unity Text', Arial, sans-serif;
+  line-height: 1.5;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  backdrop-filter: blur(2px);
+}
+
+.unsupported-browser-accent {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 6px;
+  background: linear-gradient(90deg, #e61d2b 0%, #f04f2f 100%);
+  border-radius: 16px 16px 0 0;
+}
+
+.unsupported-browser-title {
+  margin: 10px 0;
+  font-family: 'TCCC Unity Headline', Arial, sans-serif;
+  font-size: 30px;
+  line-height: 1.1;
+  letter-spacing: 0.2px;
+}
+
+.unsupported-browser-message {
+  margin: 0;
+  font-size: 18px;
+  opacity: 0.95;
+}

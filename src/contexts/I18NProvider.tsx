@@ -1,25 +1,26 @@
 import { i18n } from '@lingui/core'
 import { I18nProvider as LinguiProvider } from '@lingui/react'
-import { createContext, type PropsWithChildren, useCallback, useContext, useEffect, useState } from 'react'
+import { type PropsWithChildren, useCallback, useEffect } from 'react'
+import { create } from 'zustand'
 
 import { LANGUAGES, type Language } from '../locales/locales'
 
-type I18nContextProps = {
+type I18nStoreProps = {
   language: Language
-  setLanguage: (locale: Language) => void
 }
 
 const defaultLanguage = LANGUAGES[0]
 
-const I18nContextInitialState: I18nContextProps = {
+export const useI18nStore = create<I18nStoreProps>(() => ({
   language: defaultLanguage,
-  setLanguage: () => {},
+}))
+
+export const setLanguage = (language: Language) => {
+  useI18nStore.setState({ language })
 }
 
-const I18nContext = createContext(I18nContextInitialState)
-
 export function I18nProvider({ children }: PropsWithChildren) {
-  const [language, setLanguage] = useState(defaultLanguage)
+  const language = useI18nStore((state) => state.language)
 
   useEffect(() => {
     const language = navigator.language as Language
@@ -50,17 +51,5 @@ export function I18nProvider({ children }: PropsWithChildren) {
 
   if (!language) return null
 
-  const value = { language, setLanguage }
-
-  return (
-    <LinguiProvider i18n={i18n}>
-      <I18nContext value={value}>{children}</I18nContext>
-    </LinguiProvider>
-  )
-}
-
-export const useI18n = () => {
-  const context = useContext(I18nContext)
-  if (!context) throw new Error('useI18n must be used within I18nProvider')
-  return context
+  return <LinguiProvider i18n={i18n}>{children}</LinguiProvider>
 }

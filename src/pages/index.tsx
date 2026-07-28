@@ -1,9 +1,9 @@
-import { Trans, useLingui } from '@lingui/react/macro'
-import { usePageTitle } from 'react-hooks'
+import { useLingui } from '@lingui/react/macro'
 
+import NounAkatsukiCloud from '@/src/assets/icons/akatsuki.svg?react'
 import alpaca from '@/src/assets/images/alpaca.jpg?as=metadata'
-import NounAkatsukiCloud from '@/src/components/Icons/AkatsukiIcon.svg?react'
-import { useI18n } from '@/src/contexts/I18NProvider'
+import { setLanguage } from '@/src/contexts/I18NProvider'
+import { usePageTitle } from '@/src/hooks/usePageTitle'
 import { Link } from '@/src/router'
 import { Footer } from '../components/Footer'
 import { Header } from '../components/Header'
@@ -16,7 +16,6 @@ import s from './index.module.css'
 export default function Home() {
   usePageTitle('Home')
   const { t } = useLingui()
-  const { setLanguage } = useI18n()
 
   return (
     <>
@@ -30,22 +29,16 @@ export default function Home() {
               </button>
             ))}
             <Link className={s.button} to="/duel">
-              <Trans>Yugioh Page</Trans>
+              {t`Yugioh Page`}
             </Link>
             <Link className={s.button} to="/modals">
-              <Trans>Modals Page</Trans>
+              {t`Modals Page`}
             </Link>
           </div>
           <NounAkatsukiCloud className={s.logo} />
           <ol>
-            <li>
-              <Trans>
-                Get started by editing <code>app/index.tsx</code>.
-              </Trans>
-            </li>
-            <li>
-              <Trans>Save and see your changes instantly.</Trans>
-            </li>
+            <li>{t`Get started by editing app/index.tsx.`}</li>
+            <li>{t`Save and see your changes instantly.`}</li>
           </ol>
           <div className={s.imageWrapper}>
             <Image alt={t`Example Image.`} grow priority src={alpaca} width={300} />

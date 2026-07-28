@@ -1,13 +1,18 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import type { AxiosRequestConfig } from 'axios'
+import {
+  type QueryObserverResult,
+  type RefetchOptions,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query'
 
-import { type ApiResponse, ApiService } from '../infra/api'
+import { type ApiResponse, ApiService, type RequestConfig } from '../infra/api'
 import { getCustomError, logCustomError } from '../infra/error'
 
-export type Keys = 'todo'
+export type Keys = 'duel-cards'
 
 type ErrorMessages = Record<string | number, string>
-type ErrorState = { firstErrorMessage: string; errorMessages: ErrorMessages }
+export type ErrorState = { firstErrorMessage: string; errorMessages: ErrorMessages }
 
 type ErrorApiConfig = {
   logName: string
@@ -18,7 +23,7 @@ type ApiQueryConfig<ResponseData> = {
   key: Keys
   url: string
   error: ErrorApiConfig
-  requestConfig?: AxiosRequestConfig
+  requestConfig?: RequestConfig
   execute?: boolean
   cacheTime?: number
   initialData?: ResponseData
@@ -34,7 +39,7 @@ export function useQueryApi<ResponseData>({
   error,
 }: ApiQueryConfig<ResponseData>) {
   return useQuery<ResponseData, ErrorState>({
-    queryKey: [key],
+    queryKey: [key, url],
     queryFn: async () => {
       try {
         const response: ApiResponse<ResponseData> = await ApiService.get(url, requestConfig)
@@ -46,6 +51,7 @@ export function useQueryApi<ResponseData>({
     enabled: execute,
     retry: false,
     retryOnMount: false,
+    refetchOnWindowFocus: false,
     staleTime: cacheTime,
     initialData: initialData,
   })
@@ -58,11 +64,12 @@ type ApiMutationConfig<ResponseData, BodyObject> = {
     logName: string
     messages: { default: string } & ErrorMessages
   }
-  requestConfig?: AxiosRequestConfig
-  onError?: (error: ErrorState, body: BodyObject) => Promise<void>
-  onSuccess?: (data: ResponseData, body: BodyObject) => Promise<void>
+  requestConfig?: RequestConfig
+  onError?: (error: ErrorState, body: BodyObject) => Promise<void> | void
+  onSuccess?: (data: ResponseData, body: BodyObject) => Promise<void> | void
   onSettled?: (data: ResponseData | undefined, error: ErrorState | null, body: BodyObject) => Promise<void>
-  invalidateQueries?: Keys[]
+  refetchQueries?: Keys[]
+  removeQueries?: Keys[]
 }
 
 export function useMutationApi<ResponseData, BodyObject = void>({
@@ -73,7 +80,8 @@ export function useMutationApi<ResponseData, BodyObject = void>({
   onError,
   onSuccess,
   onSettled,
-  invalidateQueries = [],
+  refetchQueries = [],
+  removeQueries = [],
 }: ApiMutationConfig<ResponseData, BodyObject>) {
   const queryClient = useQueryClient()
 
@@ -106,8 +114,14 @@ export function useMutationApi<ResponseData, BodyObject = void>({
     },
     onSuccess: async (data, body) => {
       await onSuccess?.(data, body)
-      if (invalidateQueries?.length > 0) {
-        queryClient.invalidateQueries({ queryKey: invalidateQueries })
+      if (refetchQueries?.length > 0) {
+        await Promise.all(refetchQueries.map((key) => queryClient.refetchQueries({ queryKey: [key] })))
+      }
+
+      if (removeQueries?.length > 0) {
+        removeQueries.forEach((key: Keys) => {
+          queryClient.removeQueries({ queryKey: [key] })
+        })
       }
     },
     onSettled: async (data, error, body) => {
@@ -118,13 +132,14 @@ export function useMutationApi<ResponseData, BodyObject = void>({
 
 function handleError(config: ErrorApiConfig, err: unknown) {
   const customError = getCustomError(err)
-  const errorMessages = Object.entries(config.messages).reduce((acc: ErrorMessages, [key]) => {
-    if (customError.codes.includes(key)) {
-      acc[key] = config.messages[key]
-    }
+  const codes = new Set(customError.codes)
+  const errorMessages: ErrorMessages = {}
 
-    return acc
-  }, {})
+  for (const [key, message] of Object.entries(config.messages)) {
+    if (codes.has(key)) {
+      errorMessages[key] = message
+    }
+  }
 
   const filteredErrorMessages =
     Object.keys(errorMessages).length > 0 ? errorMessages : { default: config.messages.default }
@@ -133,4 +148,27 @@ function handleError(config: ErrorApiConfig, err: unknown) {
   logCustomError(config.logName, err)
 
   return { firstErrorMessage, errorMessages: filteredErrorMessages } as ErrorState
+}
+
+export type RefetchFn<T> = (options?: RefetchOptions | undefined) => Promise<QueryObserverResult<T, ErrorState>>
+
+export function createDefaultRefetchResult<T>(data: T): QueryObserverResult<T, ErrorState> {
+  return {
+    data,
+    error: null,
+    status: 'success',
+    isError: false,
+    isPending: false,
+    isSuccess: true,
+    isLoading: false,
+    isLoadingError: false,
+    isRefetchError: false,
+    isPlaceholderData: false,
+    isFetching: false,
+    isFetched: true,
+    isRefetching: false,
+    isStale: false,
+    failureCount: 0,
+    failureReason: null,
+  } as QueryObserverResult<T, ErrorState>
 }

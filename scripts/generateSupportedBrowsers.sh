@@ -1,25 +1,73 @@
 #!/bin/bash
 
-# Destination file
-DEST_FILE="public/browserDetect/supportedBrowsers.js"
+set -euo pipefail
 
-# Generate the browser detection code using browserslist-useragent-regexp
+DEST_DIR="public/browserDetect"
+BOOTSTRAP_FILE="$DEST_DIR/supportedBrowsers.js"
+FALLBACK_STYLE_SOURCE="scripts/UnsupportedBrowserScreen/styles.css"
+FALLBACK_STYLE_DESTINATION="$DEST_DIR/unsupportedBrowserScreen.css"
+
+# Generate the browser detection regex using browserslist policy.
 BROWSER_REGEX=$(browserslist-useragent-regexp --allowHigherVersions)
 
-BACKGROUND_COLOR="#000"
-TEXT_COLOR="#fff"
-TEXT_NOT_SUPPORTED="Your browser is not supported. Please update your browser or use a different browser for a better experience."
+FALLBACK_HTML_BY_LOCALE=$(./node_modules/.bin/tsx ./scripts/UnsupportedBrowserScreen/index.tsx)
 
-# Generate the new file with the dynamic logic
-cat > "$DEST_FILE" << EOF
-var regexBrowsers = ${BROWSER_REGEX};
-if (!regexBrowsers.test(navigator.userAgent)) {
-    document.body.innerHTML = \`
-        <div style=\"position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000; background-color: ${BACKGROUND_COLOR}; color: ${TEXT_COLOR}; padding: 20px; border-radius: 10px; width: 100%; height: 100%; text-align: center;\">
-            <div style=\"font-size: 24px; font-weight: bold; top: 50%; left: 50%; transform: translate(-50%, -50%); position: absolute;\">${TEXT_NOT_SUPPORTED}</div>
-        </div>
-    \`
-}
+mkdir -p "$DEST_DIR"
+cp "$FALLBACK_STYLE_SOURCE" "$FALLBACK_STYLE_DESTINATION"
+
+# Single script: UA gate + fallback renderer.
+cat > "$BOOTSTRAP_FILE" << EOF
+(function () {
+    var regexBrowsers = ${BROWSER_REGEX};
+    var FALLBACK_HTML_BY_LOCALE = ${FALLBACK_HTML_BY_LOCALE};
+
+    function getFallbackHtml() {
+        var browserLanguage =
+            (navigator.languages && navigator.languages[0]) || navigator.language || 'pt-BR';
+        var normalizedLanguage = browserLanguage.toLowerCase().replace('_', '-');
+        var defaultFallbackHtml = FALLBACK_HTML_BY_LOCALE.default || '';
+
+        return FALLBACK_HTML_BY_LOCALE[normalizedLanguage] || defaultFallbackHtml;
+    }
+
+    function applyFallback(reason) {
+        if (window.__UNSUPPORTED_BROWSER_RENDERED__) {
+            return;
+        }
+
+        window.__UNSUPPORTED_BROWSER_RENDERED__ = true;
+        document.body.setAttribute('data-fallback-reason', reason || 'unknown');
+        document.body.innerHTML = getFallbackHtml();
+    }
+
+    function renderFallback(reason) {
+        if (window.__UNSUPPORTED_BROWSER_RENDERED__) {
+            return;
+        }
+
+        var fallbackReason = reason || 'unknown';
+
+        if (document.body) {
+            applyFallback(fallbackReason);
+            return;
+        }
+
+        document.addEventListener(
+            'DOMContentLoaded',
+            function onDomReady() {
+                applyFallback(fallbackReason);
+            },
+            { once: true },
+        );
+    }
+
+    if (!regexBrowsers.test(navigator.userAgent)) {
+        renderFallback('ua-regex-check');
+        return;
+    }
+})();
 EOF
 
-echo "File $DEST_FILE generated successfully!"
+echo "File generated successfully:"
+echo "- $BOOTSTRAP_FILE"
+echo "- $FALLBACK_STYLE_DESTINATION"
