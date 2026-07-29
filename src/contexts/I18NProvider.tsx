@@ -1,6 +1,6 @@
 import { i18n } from '@lingui/core'
 import { I18nProvider as LinguiProvider } from '@lingui/react'
-import { type PropsWithChildren, useCallback, useEffect } from 'react'
+import { type PropsWithChildren, useEffect } from 'react'
 import { create } from 'zustand'
 
 import { LANGUAGES, type Language } from '../locales/locales'
@@ -15,7 +15,10 @@ export const useI18nStore = create<I18nStoreProps>(() => ({
   language: defaultLanguage,
 }))
 
-export const setLanguage = (language: Language) => {
+export const setLanguage = async (language: Language) => {
+  const { messages } = await import(`../locales/${language}.po?lingui`)
+  i18n.load(language, messages)
+  i18n.activate(language)
   useI18nStore.setState({ language })
 }
 
@@ -36,18 +39,6 @@ export function I18nProvider({ children }: PropsWithChildren) {
     document.documentElement.setAttribute('lang', browserLanguage)
     setLanguage(browserLanguage)
   }, [])
-
-  const dynamicActivate = useCallback(async (locale: string) => {
-    const { messages } = await import(`../locales/${locale}.po?lingui`)
-    i18n.load(locale, messages)
-    i18n.activate(locale)
-  }, [])
-
-  useEffect(() => {
-    if (language) {
-      dynamicActivate(language)
-    }
-  }, [language, dynamicActivate])
 
   if (!language) return null
 
